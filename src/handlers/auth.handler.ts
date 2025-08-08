@@ -6,6 +6,12 @@ import { Types } from "mongoose";
 import UserUseCase from "@usecases/users.usecase";
 import { AuthService } from "@service/auth.service";
 import responseManager from "@managers/index";
+import { validateUser } from "src/validation/user.validation";
+import {
+  ConflictError,
+  NotFoundError,
+  ValidationError,
+} from "@managers/error.manager";
 
 class AuthHandler {
   private userUseCase: UserUseCase;
@@ -17,21 +23,29 @@ class AuthHandler {
 
   public registerUser = async (req: Request, res: Response) => {
     try {
-      const {email,password,username}:IUser = req.body;
+      const { email, password, username }: IUser = req.body;
+
+      const { error } = validateUser(req.body);
+
+      if (error) {
+        throw new ValidationError(
+          `Validation failed ${error.details.map((e) => e.message).join(",")}`
+        );
+      }
 
       // Check if user already exists
       const userExists = await this.userUseCase.findUserByEmail(email);
       if (userExists) {
-        return responseManager.conflict(res, "User with this email exists");
+        throw new ConflictError("User with this email exists");
       }
 
       const hashedPassword = await bcrypt.hash(password as string, 10);
       const data = {
-        email:email as string,
+        email: email as string,
         password: hashedPassword,
-        username:username as string,
+        username: username as string,
       };
-     
+
       // Create new user
       const user = await this.userUseCase.registerUser(data);
       const token = this.authService.generateToken({
@@ -54,14 +68,14 @@ class AuthHandler {
 
       const user = await this.userUseCase.findUserByEmail(data.email as string);
       if (!user) {
-        return responseManager.notFound(res, "User not found");
+        throw new NotFoundError("User not found");
       }
       const isMatch = await bcrypt.compare(
         data.password as string,
         user.password
       );
       if (!isMatch) {
-        return responseManager.validationError(res, "Invalid credentials");
+        throw new ValidationError("Invalid credentials");
       }
       const token = this.authService.generateToken({
         _id: user._id as Types.ObjectId,
@@ -69,7 +83,7 @@ class AuthHandler {
       });
       return responseManager.success(res, { user, token });
     } catch (error: any) {
-      responseManager.handleError(res, error);
+      return responseManager.handleError(res, error);
     }
   };
 }
