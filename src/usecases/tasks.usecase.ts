@@ -28,6 +28,7 @@ class TaskUseCase {
         `tasks:${userId}`
       );
       if (cachedTasks) {
+        console.log(cachedTasks)
         return cachedTasks;
       }
       const tasks = await this.taskRepository.findTaskByUserId(userId);

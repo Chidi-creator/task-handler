@@ -41,7 +41,7 @@ export class AuthService {
       { session: false },
       (err: any, user: AuthenticatedUser) => {
         if (err || !user) {
-         throw new AuthenticationError("Unauthorised user")
+        return responseManager.authenticationError(res, "Unauthorised user");
         }
         console.log(user)
         authReq.user = user;

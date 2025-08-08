@@ -8,7 +8,7 @@ const authService = new AuthService();
 const taskHandler = new TaskHandler();
 
 router.route("/create").post(authService.auth, taskHandler.createTask);
-router.route("/find/:userId").get(authService.auth, taskHandler.findTaskByUserId);
+router.route("/user/:userId").get(authService.auth, taskHandler.findTaskByUserId);
 router.route("/find/:taskId").get(authService.auth, taskHandler.findTaskById);
 router.route("/update/:taskId").put(authService.auth, taskHandler.updateTaskById);
 router.route("/delete/:taskId").delete(authService.auth, taskHandler.deleteTaskById);
