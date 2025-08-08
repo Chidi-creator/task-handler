@@ -30,7 +30,6 @@ class UserUseCase {
       throw new ValidationError("Invalid email format");
     }
     const user = await this.userRepository.findUserByEmail(email);
-    console.log(user)
     return user;
   }
 

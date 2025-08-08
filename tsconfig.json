@@ -25,7 +25,9 @@
       "@handlers/*": ["src/handlers/*"],
       "@usecases/*": ["src/usecases/*"],
       "@routes/*": ["src/routes/*"],
-      "@managers/*": ["src/managers/*"]
+      "@managers/*": ["src/managers/*"],
+      "@utils/*": ["src/utils/*"],
+      "@validation/*": ["src/validation/*"]
     }
   },
   "include": ["src/**/*"]

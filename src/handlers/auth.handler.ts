@@ -6,7 +6,7 @@ import { Types } from "mongoose";
 import UserUseCase from "@usecases/users.usecase";
 import { AuthService } from "@service/auth.service";
 import responseManager from "@managers/index";
-import { validateUser } from "src/validation/user.validation";
+import { validateUser } from "@validation/user.validation";
 import {
   ConflictError,
   NotFoundError,

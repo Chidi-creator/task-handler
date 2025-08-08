@@ -11,6 +11,7 @@ import { AuthenticatedRequest, AuthenticatedUser } from "./types/auth";
 import { env } from "@config/env.config";
 import { Types } from "mongoose";
 import responseManager from "@managers/index";
+import { AuthenticationError } from "@managers/error.manager";
 
 export class AuthService {
   private JWT_SECRET: string;
@@ -40,8 +41,9 @@ export class AuthService {
       { session: false },
       (err: any, user: AuthenticatedUser) => {
         if (err || !user) {
-          return responseManager.authenticationError(res, err);
+         throw new AuthenticationError("Unauthorised user")
         }
+        console.log(user)
         authReq.user = user;
         authReq.token = req.headers.authorization?.split(" ")[1] || "";
         next();

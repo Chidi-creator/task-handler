@@ -58,7 +58,7 @@ class TaskUseCase {
     }
   }
 
-  async findAllTasks(): Promise<ITask[] | null> {
+  async findAllTasks(): Promise<ITask[]> {
     try {
       const tasks = await this.taskRepository.findAllTasks();
       return tasks;

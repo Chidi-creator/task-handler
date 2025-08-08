@@ -1,8 +1,11 @@
+import { ValidationError } from "@managers/error.manager";
 import { ITask } from "@models/types/tasks";
 import { AuthenticatedRequest } from "@service/types/auth";
 import TaskUseCase from "@usecases/tasks.usecase";
 import { Request, Response } from "express";
 import { Types } from "mongoose";
+import { validateTask } from "@validation/task.validation";
+import responseManager from "@managers/index";
 class TaskHandler {
   private taskUseCase: TaskUseCase;
   constructor() {
@@ -13,24 +16,46 @@ class TaskHandler {
       const authReq = req as AuthenticatedRequest;
       const data: ITask = {
         ...req.body,
-        userId: authReq.user._id
+        userId: authReq.user._id,
+      };
+      const { error } = validateTask(data);
+      if (error) {
+        throw new ValidationError(
+          `Validation failed ${error.details.map((e) => e.message).join(",")}`
+        );
       }
       const task = await this.taskUseCase.createTask(data);
-      return res.status(200).json(task);
+      return responseManager.success(
+        res,
+        task,
+        "Task created successfully",
+        201
+      );
     } catch (error: any) {
-      return res.status(500).json({ message: `${error.message}` });
+      responseManager.handleError(res, error);
     }
   };
 
   public findTaskByUserId = async (req: Request, res: Response) => {
     try {
       const userId = req.params.userId;
-      const tasks = await this.taskUseCase.findTaskByUserId(
+      const tasks: ITask[] | null = await this.taskUseCase.findTaskByUserId(
         new Types.ObjectId(userId)
       );
-      return res.status(200).json(tasks);
+      if (!tasks) {
+        return responseManager.notFound(
+          res,
+          "Tasks not found or could not be fetched"
+        );
+      }
+      return responseManager.success(
+        res,
+        tasks,
+        "Tasks fetched successfully",
+        200
+      );
     } catch (error: any) {
-      return res.status(500).json({ message: `${error.message}` });
+      responseManager.handleError(res, error);
     }
   };
 
@@ -40,18 +65,35 @@ class TaskHandler {
       const task = await this.taskUseCase.findTaskById(
         new Types.ObjectId(taskId)
       );
-      return res.status(200).json(task);
+      if (!task) {
+        return responseManager.notFound(
+          res,
+          "Task not found or could not be fetched"
+        );
+      }
+
+      return responseManager.success(
+        res,
+        task,
+        "Task fetched successfully",
+        200
+      );
     } catch (error: any) {
-      return res.status(500).json({ message: `${error.message}` });
+      responseManager.handleError(res, error);
     }
   };
 
   public findAllTasks = async (req: Request, res: Response) => {
     try {
       const tasks = await this.taskUseCase.findAllTasks();
-      return res.status(200).json(tasks);
+      return responseManager.success(
+        res,
+        tasks,
+        "Tasks fetched successfully",
+        200
+      );
     } catch (error: any) {
-      return res.status(500).json({ message: `${error.message}` });
+      responseManager.handleError(res, error);
     }
   };
 
@@ -64,9 +106,22 @@ class TaskHandler {
         new Types.ObjectId(taskId),
         updateData
       );
-      return res.status(200).json(task);
+
+      if (!task) {
+        return responseManager.notFound(
+          res,
+          "Task not found or could not be updated"
+        );
+      }
+
+      return responseManager.success(
+        res,
+        task,
+        "Task updated successfully",
+        200
+      );
     } catch (error: any) {
-      return res.status(500).json({ message: `${error.message}` });
+      responseManager.handleError(res, error);
     }
   };
 
@@ -76,9 +131,22 @@ class TaskHandler {
       const task = await this.taskUseCase.deleteTaskById(
         new Types.ObjectId(taskId)
       );
-      return res.status(200).json(task);
+
+      if (!task) {
+        return responseManager.notFound(
+          res,
+          "Task not found or could not be deleted"
+        );
+      }
+
+      return responseManager.success(
+        res,
+        task,
+        "Task deleted successfully",
+        200
+      );
     } catch (error: any) {
-      return res.status(500).json({ message: `${error.message}` });
+      responseManager.handleError(res, error);
     }
   };
 }

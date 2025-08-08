@@ -3,12 +3,12 @@ import { Types } from "mongoose";
 import { TaskType, PriorityLevel, ProgressStatus  } from "src/global/constants";
 
 export interface ITask extends Document{
-    name: string;
+    title: string;
     userId: Types.ObjectId;
     description?: string;
     type: TaskType;
     priority: PriorityLevel;
-    status: ProgressStatus;
+    status?: ProgressStatus;
     deletedAt?: Date;
     dueDate?: Date;
 }

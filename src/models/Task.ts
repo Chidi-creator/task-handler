@@ -1,10 +1,16 @@
 import mongoose from "mongoose";
 import { ITask } from "./types/tasks";
 import { PriorityLevel, ProgressStatus, TaskType } from "@global/constants";
+import { enumValues } from "@utils/helper.utils";
 
 const taskSchema = new mongoose.Schema<ITask>(
   {
-    name: {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    title: {
       type: String,
       required: true,
     },
@@ -13,15 +19,15 @@ const taskSchema = new mongoose.Schema<ITask>(
     },
     type: {
       type: String,
-      enum: TaskType,
+      enum: enumValues(TaskType),
     },
     priority: {
       type: String,
-      enum: PriorityLevel,
+      enum: enumValues(PriorityLevel),
     },
     status: {
       type: String,
-      enum: ProgressStatus,
+      enum: enumValues(ProgressStatus),
       default: ProgressStatus.NOT_STARTED,
     },
     deletedAt: { type: Date, default: null },
@@ -29,6 +35,6 @@ const taskSchema = new mongoose.Schema<ITask>(
   { timestamps: true, versionKey: false }
 );
 
-const Task = mongoose.model<ITask>("Task", taskSchema)
+const Task = mongoose.model<ITask>("Task", taskSchema);
 
-export default Task
+export default Task;
