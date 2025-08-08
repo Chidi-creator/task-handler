@@ -10,6 +10,7 @@ import {
 import { AuthenticatedRequest, AuthenticatedUser } from "./types/auth";
 import { env } from "@config/env.config";
 import { Types } from "mongoose";
+import responseManager from "@managers/index";
 
 export class AuthService {
   private JWT_SECRET: string;
@@ -39,7 +40,7 @@ export class AuthService {
       { session: false },
       (err: any, user: AuthenticatedUser) => {
         if (err || !user) {
-          return res.status(401).json({ message: "Unauthorized" });
+          return responseManager.authenticationError(res, err);
         }
         authReq.user = user;
         authReq.token = req.headers.authorization?.split(" ")[1] || "";
