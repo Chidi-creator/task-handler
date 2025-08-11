@@ -5,8 +5,8 @@ const authHandler = new AuthHandler();
 
 
 // Bind methods properly to maintain 'this' context
-router.route("/login").post(authHandler.login.bind(authHandler));
-router.route("/register").post(authHandler.registerUser.bind(authHandler));
+router.route("/login").post(authHandler.login);
+router.route("/register").post(authHandler.registerUser);
 
 export default router;
 

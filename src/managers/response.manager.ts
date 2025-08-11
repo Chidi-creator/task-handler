@@ -1,10 +1,11 @@
-import {Response} from 'express'
+import { Response } from "express";
 import { ErrorResponse, SuccessResponse } from "./types/response";
 import {
   BadRequestError,
   ConflictError,
   DatabaseError,
   NotFoundError,
+  ProviderError,
   ValidationError,
 } from "./error.manager";
 
@@ -95,6 +96,21 @@ export class ResponseManager {
     res.status(statusCode).json(response);
   }
 
+  providerError(
+    res: Response,
+    errors: string | Array<any> | {},
+    message = "Provider Error",
+    statusCode = 500
+  ) {
+    const response: ErrorResponse = {
+      success: false,
+      errors,
+      message,
+      statusCode,
+    };
+    res.status(statusCode).json(response);
+  }
+
   authenticationError(
     res: Response,
     errors: string | Array<any> | {},
@@ -117,12 +133,13 @@ export class ResponseManager {
     } else if (error instanceof NotFoundError) {
       return this.notFound(res, error.message);
     } else if (error instanceof DatabaseError)
-      return this.notFound(res, error.message);
+      return this.internalError(res, error.message);
     else if (error instanceof ValidationError) {
       return this.validationError(res, error.message);
+    } else if (error instanceof ProviderError) {
+      return this.providerError(res, error.message);
     } else {
       return this.internalError(res, error.message);
     }
   }
 }
-    

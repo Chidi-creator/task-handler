@@ -12,13 +12,17 @@ import {
   NotFoundError,
   ValidationError,
 } from "@managers/error.manager";
+import { EmailOptions } from "@config/types/email";
+import MailService from "@service/mail.service";
 
 class AuthHandler {
   private userUseCase: UserUseCase;
   private authService: AuthService;
+  private mailService: MailService;
   constructor() {
     this.userUseCase = new UserUseCase();
     this.authService = new AuthService();
+    this.mailService = new MailService();
   }
 
   public registerUser = async (req: Request, res: Response) => {
@@ -53,6 +57,13 @@ class AuthHandler {
         email: user.email,
       });
 
+      const mailBody:EmailOptions = {
+        to: user.email,
+        subject: "Welcome to our app",
+        text: "Thank you for registering",
+      }
+      
+      await this.mailService.sendMail(mailBody);
       return responseManager.success(
         res,
         { user, token },
