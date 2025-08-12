@@ -27,7 +27,9 @@
       "@routes/*": ["src/routes/*"],
       "@managers/*": ["src/managers/*"],
       "@utils/*": ["src/utils/*"],
-      "@validation/*": ["src/validation/*"]
+      "@validation/*": ["src/validation/*"],
+      "@engine/*": ["src/engine/*"],
+      
     }
   },
   "include": ["src/**/*"]

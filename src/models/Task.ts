@@ -30,6 +30,10 @@ const taskSchema = new mongoose.Schema<ITask>(
       enum: enumValues(ProgressStatus),
       default: ProgressStatus.NOT_STARTED,
     },
+    dueTime: {
+      type: Date,
+      default: null,
+    },
     deletedAt: { type: Date, default: null },
   },
   { timestamps: true, versionKey: false }

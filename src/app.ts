@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { connDb } from "database/db";
 import { redisConfig } from "./config";
 import middleware from "./middleware";
+import "./engine/workers/email.workers"; // Initialize email worker
 
 connDb();
 

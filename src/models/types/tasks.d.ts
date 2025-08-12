@@ -10,5 +10,6 @@ export interface ITask extends Document{
     priority: PriorityLevel;
     status?: ProgressStatus;
     deletedAt?: Date;
-    dueDate?: Date;
+    dueTime?: string | Date | undefined;
 }
+

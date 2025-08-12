@@ -3,6 +3,7 @@ import TaskRepository from "@repositories/task.repository";
 import { Types } from "mongoose";
 import CacheService from "@service/cache.service";
 import { NotFoundError } from "@managers/error.manager";
+import { parseTime } from "@utils/helper.utils";
 
 class TaskUseCase {
   private taskRepository: TaskRepository;
@@ -14,7 +15,11 @@ class TaskUseCase {
 
   async createTask(task: ITask) {
     try {
-      const newTask = await this.taskRepository.createTask(task);
+      const data = {
+        ...task,
+        dueTime: task.dueTime ? parseTime(task.dueTime as string) : undefined,
+      };
+      const newTask = await this.taskRepository.createTask(data as ITask);
       await this.cacheService.del(`tasks:${task.userId}`);
       return newTask;
     } catch (error: any) {
@@ -28,7 +33,7 @@ class TaskUseCase {
         `tasks:${userId}`
       );
       if (cachedTasks) {
-        console.log(cachedTasks)
+        console.log(cachedTasks);
         return cachedTasks;
       }
       const tasks = await this.taskRepository.findTaskByUserId(userId);

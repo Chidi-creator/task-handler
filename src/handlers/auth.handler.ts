@@ -6,6 +6,7 @@ import { Types } from "mongoose";
 import UserUseCase from "@usecases/users.usecase";
 import { AuthService } from "@service/auth.service";
 import responseManager from "@managers/index";
+import { addEmailJob } from "@engine/jobs/email.jobs";
 import { validateUser } from "@validation/user.validation";
 import {
   ConflictError,
@@ -13,16 +14,13 @@ import {
   ValidationError,
 } from "@managers/error.manager";
 import { EmailOptions } from "@config/types/email";
-import MailService from "@service/mail.service";
 
 class AuthHandler {
   private userUseCase: UserUseCase;
   private authService: AuthService;
-  private mailService: MailService;
   constructor() {
     this.userUseCase = new UserUseCase();
     this.authService = new AuthService();
-    this.mailService = new MailService();
   }
 
   public registerUser = async (req: Request, res: Response) => {
@@ -63,7 +61,7 @@ class AuthHandler {
         text: "Thank you for registering",
       }
       
-      await this.mailService.sendMail(mailBody);
+      await addEmailJob(mailBody);
       return responseManager.success(
         res,
         { user, token },
