@@ -14,6 +14,7 @@ import {
   ValidationError,
 } from "@managers/error.manager";
 import { EmailOptions } from "@config/types/email";
+import { JOBS } from "@global/constants";
 
 class AuthHandler {
   private userUseCase: UserUseCase;
@@ -55,13 +56,13 @@ class AuthHandler {
         email: user.email,
       });
 
-      const mailBody:EmailOptions = {
+      const mailBody: EmailOptions = {
         to: user.email,
         subject: "Welcome to our app",
         text: "Thank you for registering",
-      }
-      
-      await addEmailJob(mailBody);
+      };
+
+      await addEmailJob(JOBS.SEND_WELCOME_EMAIL, mailBody);
       return responseManager.success(
         res,
         { user, token },
