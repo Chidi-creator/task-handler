@@ -2,6 +2,7 @@
   "name": "todo-redis",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "start": "nodemon",
     "build": "tsc"

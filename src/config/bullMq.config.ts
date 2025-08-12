@@ -1,7 +1,7 @@
 import { ChildProcessor, Queue, Worker } from "bullmq";
 import { RedisClientType, createClient } from "redis";
 import { env } from "./env.config";
-import { ConnectionOptions } from "./types/bullMq";
+import { ConnectionOptions, RepeatOptions } from "./types/bullMq";
 
 export type ProcessorFn = (job: any) => Promise<any>;
 
@@ -28,23 +28,40 @@ class BullMQConfig {
     const queue = new Queue(name, {
       connection: this.connectionOptions,
       defaultJobOptions: {
-        removeOnComplete: 10, 
-        removeOnFail: 5      
-      }
+        removeOnComplete: 10,
+        removeOnFail: 5,
+      },
     });
     return queue;
   }
 
- public async createWorker(
+  public async createWorker(
     name: string,
     processor: ProcessorFn
- ): Promise<Worker> {
+  ): Promise<Worker> {
     const worker = new Worker(name, processor, {
       connection: this.connectionOptions,
     });
     return worker;
- }
-}   
+  }
 
+  public async scheduleJob(
+    queue: Queue,
+    jobName: string,
+    data: any,
+    schedule: string
+  ) {
+  
+    await queue.add(jobName, data, {
+      attempts: 2,
+      removeOnComplete: true,
+      removeOnFail: 50,
+      jobId: `repeat-${jobName}`,
+      repeat: {
+        pattern: schedule,
+      } 
+    });
+  }
+}
 
-export default BullMQConfig
+export default BullMQConfig;

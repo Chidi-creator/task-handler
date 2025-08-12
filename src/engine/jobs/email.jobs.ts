@@ -6,9 +6,9 @@ export const addEmailJob = async(jobName: string, data:EmailOptions) => {
     try { 
         const queue = await emailQueue;
         await queue.add(jobName, data, {
-            attempts: 3,
+            attempts: 2,
             removeOnComplete: 10, 
-            removeOnFail: 5       
+            removeOnFail: 5, 
         });
     } catch (error) {
         console.log(error)

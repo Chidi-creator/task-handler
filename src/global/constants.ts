@@ -31,15 +31,19 @@ export const nodeMailerConfig: NodeMailerConfigType = {
   },
 };
 
-export enum WORKERS {
+export enum QUEUE {
   EMAIL = "email",
+  DATABASE = "database",
+
 }
 
 export enum JOBS {
   SEND_WELCOME_EMAIL = "sendWelcomeEmail",
+  CHECK_DB = "checkDb",
+  SEND_REMINDER_EMAIL = "sendReminderEmail",
+
 }
 
-
-export const DATE_REGEX =  /^\d{4}-\d{2}-\d{2}$/;
+export const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
 export const TIME_REGEX = /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/;
