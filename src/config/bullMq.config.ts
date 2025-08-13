@@ -1,7 +1,7 @@
 import { ChildProcessor, Queue, Worker } from "bullmq";
 import { RedisClientType, createClient } from "redis";
 import { env } from "./env.config";
-import { ConnectionOptions, RepeatOptions } from "./types/bullMq";
+import { ConnectionOptions } from "./types/bullMq";
 
 export type ProcessorFn = (job: any) => Promise<any>;
 
