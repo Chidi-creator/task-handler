@@ -300,13 +300,6 @@ src/
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 License
 
-This project is licensed under the ISC License.
 
-## 🆘 Support
 
-For support and questions:
-- Check the troubleshooting section
-- Review the logs for error details
-- Ensure all dependencies are properly installed
