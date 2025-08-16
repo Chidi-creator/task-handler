@@ -20,6 +20,19 @@ export const startEmailWorker = async () => {
             `Job ${job.id}: ${job.name} completed successfully at ${new Date().toISOString()}`
           );
         }
+
+        if (job.name === JOBS.SEND_REMINDER_EMAIL) {
+          console.log(`Currently running ${job.name} worker`);
+
+          const data = job.data as EmailOptions;
+          console.log(`Sending email to: ${data.to} with subject: ${data.subject}`);
+          await mailService.sendMail(data);
+          console.log(`Email sent successfully to: ${data.to}`);
+
+          console.log(
+            `Job ${job.id}: ${job.name} completed successfully at ${new Date().toISOString()}`
+          );
+        }
       } catch (error) {
         console.error(
           `Job ${job.id}: ${job.name} failed at ${new Date().toISOString()} with error:`,

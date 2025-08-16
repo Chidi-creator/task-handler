@@ -93,6 +93,14 @@ class TaskUseCase {
       throw new Error("Error deleting Task");
     }
   }
+  async groupTasksByUserId(): Promise<any[]> {
+    try {
+      const tasks = await this.taskRepository.groupTasksByUserId();
+      return tasks;
+    } catch (error: any) {
+      throw new Error("Error fetching Tasks");
+    }
+  }
 }
 
 export default TaskUseCase;

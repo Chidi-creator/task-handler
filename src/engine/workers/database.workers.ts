@@ -1,27 +1,49 @@
 import TaskUseCase from "@usecases/tasks.usecase";
 import { JOBS, QUEUE } from "@global/constants";
-import { databaseQueue } from "@engine/queues/database.queue";
 import QueueManager from "@managers/queue.manager";
-import { IUser } from "@models/types/user";
 import { ITask } from "@models/types/tasks";
-import { connDb } from "database/mongo";
+import { EmailOptions } from "@config/types/email";
+import { addEmailJob } from "@engine/jobs/email.jobs";
+import UserUseCase from "@usecases/users.usecase";
+import { Types } from "mongoose";
 
+const userUseCase = new UserUseCase();
 const taskUseCase = new TaskUseCase();
 
 const queueManager = new QueueManager();
 export const startDatabaseWorker = async () => {
   queueManager.createWorker(QUEUE.DATABASE, async (job) => {
     try {
-      await connDb();
       if (job.name === JOBS.CHECK_DB) {
-        console.log("Running database worker of and Checking database...");
-
+        //step one find all tasks
+        console.log("Running database worker of sending reminder emails...");
         const tasks: ITask[] = await taskUseCase.findAllTasks();
 
         for (const task of tasks) {
-          console.log(task.userId);
-        }
+         
+
+         if (task.dueTime && task.overdue === false && task.dueTime < new Date()) {
+          console.log(`Task ${task.title} is overdue, sending email...`);
+          const user = await userUseCase.findUserById(task.userId);
+          if(user){
+           const emailOptions: EmailOptions = {
+             to: user.email,
+             subject: "Task Reminder",
+             text: `You have a task that is overdue: ${task.title}`,
+           };
+           await addEmailJob(JOBS.SEND_REMINDER_EMAIL, emailOptions);
+           await taskUseCase.updateTaskById(task._id as Types.ObjectId, { overdue: true });
+           console.log(`Email sent and task ${task.title} marked as overdue`);
+          } else {
+           console.log(`User not found for task ${task.title}, skipping email`);
+          }
+         }
+        
+
+
+       
       }
+    }
     } catch (error) {
       console.log(
         `Job ${job.id}: ${

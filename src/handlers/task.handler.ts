@@ -149,6 +149,7 @@ class TaskHandler {
       responseManager.handleError(res, error);
     }
   };
+ 
 }
 
 export default TaskHandler;

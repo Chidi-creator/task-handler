@@ -63,6 +63,47 @@ class TaskRepository {
       throw new DatabaseError("Error deleting Task");
     }
   }
+  async groupTasksByUserId(): Promise<any[]> {
+    try {
+      const tasks = await Task.aggregate([
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "user",
+          },
+        },
+        {
+          $unwind: "$user",
+        },
+        {
+          $group: {
+            _id: "$userId",
+            tasks: {
+              $push: {
+                title: "$title",
+                dueTime: "$dueTime",
+              },
+            },
+            email: { $first: "$user.email" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            userId: "$_id",
+            tasks: 1,
+            email: 1,
+          },
+        },
+      ]);
+
+      return tasks;
+    } catch (error: any) {
+      throw new DatabaseError("Error fetching Tasks");
+    }
+  }
 }
 
 export default TaskRepository;

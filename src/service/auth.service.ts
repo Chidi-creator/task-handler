@@ -77,7 +77,7 @@ export class AuthService {
       },
 
       this.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "3d" }
     );
     return token;
   };

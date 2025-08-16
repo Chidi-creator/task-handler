@@ -9,6 +9,7 @@ export interface ITask extends Document{
     type: TaskType;
     priority: PriorityLevel;
     status?: ProgressStatus;
+    overdue?: boolean;
     deletedAt?: Date;
     dueTime?: string | Date | undefined;
 }

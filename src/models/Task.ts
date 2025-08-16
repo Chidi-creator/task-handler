@@ -35,7 +35,12 @@ const taskSchema = new mongoose.Schema<ITask>(
       default: null,
     },
     deletedAt: { type: Date, default: null },
+    overdue: {
+      type: Boolean,
+      default: false,
+    },
   },
+
   { timestamps: true, versionKey: false }
 );
 
